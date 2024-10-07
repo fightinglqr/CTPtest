@@ -20,6 +20,7 @@
   <ItemGroup>
     <ClInclude Include="..\src\CustomMdSpi.h" />
     <ClInclude Include="..\src\CustomTradeSpi.h" />
+    <ClInclude Include="..\src\GlobalVers.h" />
     <ClInclude Include="..\src\StrategyTrade.h" />
     <ClInclude Include="..\src\TickToKlineHelper.h" />
   </ItemGroup>
@@ -31,7 +32,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -52,7 +53,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>..\src\CTP_API;$(IncludePath)</IncludePath>
+    <IncludePath>C:\work\software\CTP\CTPtest\src;$(IncludePath)</IncludePath>
     <LibraryPath>..\src\CTP_API;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

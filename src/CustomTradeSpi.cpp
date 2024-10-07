@@ -14,6 +14,7 @@ extern char gTradeFrontAddr[];                                // Ä£Äâ½»Ò×Ç°ÖÃµØÖ
 extern TThostFtdcInstrumentIDType g_pTradeInstrumentID;       // Ëù½»Ò×µÄºÏÔ¼´úÂë
 extern TThostFtdcDirectionType gTradeDirection;               // ÂòÂô·½Ïò
 extern TThostFtdcPriceType gLimitPrice;                       // ½»Ò×¼Û¸ñ
+extern int requestID;                                         // Ê¹µÃÇëÇóºÅÃ¿´ÎºóµİÔö
 
 // »á»°²ÎÊı
 TThostFtdcFrontIDType	trade_front_id;	//Ç°ÖÃ±àºÅ
@@ -162,11 +163,6 @@ void CustomTradeSpi::OnRspQryInvestorPosition(
 		else
 			std::cout << "----->¸ÃºÏÔ¼Î´³Ö²Ö" << std::endl;
 		
-		// ±¨µ¥Â¼ÈëÇëÇó£¨ÕâÀïÊÇÒ»²¿½Ó¿Ú£¬´Ë´¦ÊÇ°´Ë³ĞòÖ´ĞĞ£©
-		/*if (loginFlag)
-			reqOrderInsert();*/
-		//if (loginFlag)
-		//	reqOrderInsertWithParams(g_pTradeInstrumentID, gLimitPrice, 1, gTradeDirection); // ×Ô¶¨ÒåÒ»±Ê½»Ò×
 
 		// ²ßÂÔ½»Ò×
 		std::cout << "=====¿ªÊ¼½øÈë²ßÂÔ½»Ò×=====" << std::endl;
@@ -280,8 +276,7 @@ void CustomTradeSpi::reqSettlementInfoConfirm()
 	memset(&settlementConfirmReq, 0, sizeof(settlementConfirmReq));
 	strcpy(settlementConfirmReq.BrokerID, gBrokerID);
 	strcpy(settlementConfirmReq.InvestorID, gInvesterID);
-	static int requestID = 0; // ÇëÇó±àºÅ
-	int rt = g_pTradeUserApi->ReqSettlementInfoConfirm(&settlementConfirmReq, requestID);
+	int rt = g_pTradeUserApi->ReqSettlementInfoConfirm(&settlementConfirmReq, requestID++);
 	if (!rt)
 		std::cout << ">>>>>>·¢ËÍÍ¶×ÊÕß½áËã½á¹ûÈ·ÈÏÇëÇó³É¹¦" << std::endl;
 	else
@@ -293,8 +288,7 @@ void CustomTradeSpi::reqQueryInstrument()
 	CThostFtdcQryInstrumentField instrumentReq;
 	memset(&instrumentReq, 0, sizeof(instrumentReq));
 	strcpy(instrumentReq.InstrumentID, g_pTradeInstrumentID);
-	static int requestID = 0; // ÇëÇó±àºÅ
-	int rt = g_pTradeUserApi->ReqQryInstrument(&instrumentReq, requestID);
+	int rt = g_pTradeUserApi->ReqQryInstrument(&instrumentReq, requestID++);
 	if (!rt)
 		std::cout << ">>>>>>·¢ËÍºÏÔ¼²éÑ¯ÇëÇó³É¹¦" << std::endl;
 	else
@@ -307,9 +301,8 @@ void CustomTradeSpi::reqQueryTradingAccount()
 	memset(&tradingAccountReq, 0, sizeof(tradingAccountReq));
 	strcpy(tradingAccountReq.BrokerID, gBrokerID);
 	strcpy(tradingAccountReq.InvestorID, gInvesterID);
-	static int requestID = 0; // ÇëÇó±àºÅ
 	std::this_thread::sleep_for(std::chrono::milliseconds(700)); // ÓĞÊ±ºòĞèÒªÍ£¶ÙÒ»»á²ÅÄÜ²éÑ¯³É¹¦
-	int rt = g_pTradeUserApi->ReqQryTradingAccount(&tradingAccountReq, requestID);
+	int rt = g_pTradeUserApi->ReqQryTradingAccount(&tradingAccountReq, requestID++);
 	if (!rt)
 		std::cout << ">>>>>>·¢ËÍÍ¶×ÊÕß×Ê½ğÕË»§²éÑ¯ÇëÇó³É¹¦" << std::endl;
 	else
@@ -323,9 +316,8 @@ void CustomTradeSpi::reqQueryInvestorPosition()
 	strcpy(postionReq.BrokerID, gBrokerID);
 	strcpy(postionReq.InvestorID, gInvesterID);
 	strcpy(postionReq.InstrumentID, g_pTradeInstrumentID);
-	static int requestID = 0; // ÇëÇó±àºÅ
 	std::this_thread::sleep_for(std::chrono::milliseconds(700)); // ÓĞÊ±ºòĞèÒªÍ£¶ÙÒ»»á²ÅÄÜ²éÑ¯³É¹¦
-	int rt = g_pTradeUserApi->ReqQryInvestorPosition(&postionReq, requestID);
+	int rt = g_pTradeUserApi->ReqQryInvestorPosition(&postionReq, requestID++);
 	if (!rt)
 		std::cout << ">>>>>>·¢ËÍÍ¶×ÊÕß³Ö²Ö²éÑ¯ÇëÇó³É¹¦" << std::endl;
 	else
@@ -371,8 +363,7 @@ void CustomTradeSpi::reqOrderInsert()
 	///ÓÃ»§Ç¿ÆÀ±êÖ¾: ·ñ
 	orderInsertReq.UserForceClose = 0;
 
-	static int requestID = 0; // ÇëÇó±àºÅ
-	int rt = g_pTradeUserApi->ReqOrderInsert(&orderInsertReq, ++requestID);
+	int rt = g_pTradeUserApi->ReqOrderInsert(&orderInsertReq, requestID++);
 	if (!rt)
 		std::cout << ">>>>>>·¢ËÍ±¨µ¥Â¼ÈëÇëÇó³É¹¦" << std::endl;
 	else

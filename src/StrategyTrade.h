@@ -19,3 +19,5 @@ using ReqOrderInsertFunctionType = std::function<
 	TThostFtdcDirectionType direction)>;
 
 void StrategyCheckAndTrade(TThostFtdcInstrumentIDType instrumentID, CustomTradeSpi *customTradeSpi);
+
+void StrategyForSn(TThostFtdcInstrumentIDType instrumentID, CustomTradeSpi *customTradeSpi, TickToKlineHelper tickToKlineObject);

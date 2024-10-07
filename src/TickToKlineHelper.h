@@ -7,11 +7,11 @@
 // k线数据结构
 struct KLineDataType
 {
-	double open_price;   // 开
-	double high_price;   // 高
-	double low_price;    // 低
-	double close_price;  // 收
-	int volume;          // 量
+	double open_price;   // 开盘价
+	double high_price;   // 最高价
+	double low_price;    // 最低价
+	double close_price;  // 收盘价
+	int volume;          // 这根k线上的成交量
 };
 
 class TickToKlineHelper

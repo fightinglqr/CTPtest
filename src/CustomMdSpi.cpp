@@ -4,6 +4,7 @@
 #include "CustomMdSpi.h"
 #include "TickToKlineHelper.h"
 
+
 // ---- 全局参数声明 ---- //
 extern CThostFtdcMdApi *g_pMdUserApi;            // 行情指针
 extern char gMdFrontAddr[];                      // 模拟行情前置地址
@@ -11,8 +12,9 @@ extern TThostFtdcBrokerIDType gBrokerID;         // 模拟经纪商代码
 extern TThostFtdcInvestorIDType gInvesterID;     // 投资者账户名
 extern TThostFtdcPasswordType gInvesterPassword; // 投资者密码
 extern char *g_pInstrumentID[];                  // 行情合约代码列表，中、上、大、郑交易所各选一种
-extern int instrumentNum;                        // 行情合约订阅数量
+extern int instrumentNum;                        // 订阅的合约的数量
 extern std::unordered_map<std::string, TickToKlineHelper> g_KlineHash; // k线存储表
+extern int requestID;
 
 // ---- ctp_api回调函数 ---- //
 // 连接成功应答
@@ -25,8 +27,8 @@ void CustomMdSpi::OnFrontConnected()
 	strcpy(loginReq.BrokerID, gBrokerID);
 	strcpy(loginReq.UserID, gInvesterID);
 	strcpy(loginReq.Password, gInvesterPassword);
-	static int requestID = 0; // 请求编号
-	int rt = g_pMdUserApi->ReqUserLogin(&loginReq, requestID);
+
+	int rt = g_pMdUserApi->ReqUserLogin(&loginReq, requestID++);
 	if (!rt)
 		std::cout << ">>>>>>发送登录请求成功" << std::endl;
 	else

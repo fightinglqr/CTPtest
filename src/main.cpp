@@ -1,10 +1,9 @@
 #include <iostream>
 #include <stdio.h>
 #include <string>
-#include <unordered_map>
-#include "CustomMdSpi.h"
-#include "CustomTradeSpi.h"
-#include "TickToKlineHelper.h"
+#include "GlobalVers.h"
+
+#include <windows.h>
 
 using namespace std;
 
@@ -12,33 +11,14 @@ using namespace std;
 #pragma comment (lib, "thostmduserapi.lib")
 #pragma comment (lib, "thosttraderapi.lib")
 
-// ---- 全局变量 ---- //
-// 公共参数
-TThostFtdcBrokerIDType gBrokerID = "9999";                         // 模拟经纪商代码
-TThostFtdcInvestorIDType gInvesterID = "";                         // 投资者账户名
-TThostFtdcPasswordType gInvesterPassword = "";                     // 投资者密码
-
-// 行情参数
-CThostFtdcMdApi *g_pMdUserApi = nullptr;                           // 行情指针
-char gMdFrontAddr[] = "tcp://180.168.146.187:10010";               // 模拟行情前置地址
-char *g_pInstrumentID[] = {"TF1706", "zn1705", "cs1801", "CF705"}; // 行情合约代码列表，中、上、大、郑交易所各选一种
-int instrumentNum = 4;                                             // 行情合约订阅数量
-unordered_map<string, TickToKlineHelper> g_KlineHash;              // 不同合约的k线存储表
-
-// 交易参数
-CThostFtdcTraderApi *g_pTradeUserApi = nullptr;                    // 交易指针
-char gTradeFrontAddr[] = "tcp://180.168.146.187:10001";            // 模拟交易前置地址
-TThostFtdcInstrumentIDType g_pTradeInstrumentID = "zn1705";        // 所交易的合约代码
-TThostFtdcDirectionType gTradeDirection = THOST_FTDC_D_Sell;       // 买卖方向
-TThostFtdcPriceType gLimitPrice = 22735;                           // 交易价格
 
 int main()
 {
-	// 账号密码
+	/* 账号密码
 	cout << "请输入账号： ";
 	scanf("%s", gInvesterID);
 	cout << "请输入密码： ";
-	scanf("%s", gInvesterPassword);
+	scanf("%s", gInvesterPassword);*/
 
 	// 初始化行情线程
 	cout << "初始化行情..." << endl;
@@ -47,7 +27,8 @@ int main()
 	g_pMdUserApi->RegisterSpi(pMdUserSpi);               // 注册事件类
 	g_pMdUserApi->RegisterFront(gMdFrontAddr);           // 设置行情前置地址
 	g_pMdUserApi->Init();                                // 连接运行
-	
+
+    cout << "ctp version:" << g_pMdUserApi->GetApiVersion() << endl;
 
 
 	// 初始化交易线程
@@ -62,18 +43,35 @@ int main()
 	g_pTradeUserApi->Init();                                      // 连接运行
 		
 
-	// 等到线程退出
-	g_pMdUserApi->Join();
-	delete pMdUserSpi;
-	g_pMdUserApi->Release();
+	// join的目的是等待init，而init要做连接对端服务器等等很多事情
+    // ctp库文件里会开多个线程进行对端连接请求等等
+    // join此时在等CTP的库文件的其他线程全部完成并且返回
+	//g_pMdUserApi->Join();
+	//g_pTradeUserApi->Join();
+	
 
-	g_pTradeUserApi->Join();
-	delete pTradeSpi;
-	g_pTradeUserApi->Release();
 
 	// 转换本地k线数据
 	//TickToKlineHelper tickToKlineHelper;
 	//tickToKlineHelper.KLineFromLocalData("market_data.csv", "K_line_data.csv");
+
+    // 主线程一直进行循环,等待库文件里的子线程的spi响应，以及响应后进行一系列其他的操作
+    char input[256];
+    while (true) {
+        fgets(input,sizeof(input),stdin);
+        if (strcmp(input, "exit") == 0) {
+            break;
+        }
+        Sleep(10 * 1000);
+    }
+
+
+    // 这里执行结束，则进行退出操作
+    delete pMdUserSpi;
+    g_pMdUserApi->Release();
+
+    delete pTradeSpi;
+    g_pTradeUserApi->Release();
 	
 	getchar();
 	return 0;
